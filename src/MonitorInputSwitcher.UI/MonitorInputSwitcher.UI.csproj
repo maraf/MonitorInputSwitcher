@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<RootNamespace>MonitorInputSwitcher</RootNamespace>
+		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
+		<AssemblyName>misw</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Neptuo" Version="6.0.1" />
+	</ItemGroup>
+
+</Project>

@@ -1,8 +1,7 @@
-﻿<Application x:Class="MonitorInputSwitcher.UI.App"
+﻿<Application x:Class="MonitorInputSwitcher.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:MonitorInputSwitcher.UI"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:MonitorInputSwitcher">
     <Application.Resources>
          
     </Application.Resources>
