@@ -16,12 +16,15 @@ namespace MonitorInputSwitcher
     public partial class App : Application
     {
         private AppTrayIcon? trayIcon;
+        private MonitorService? service;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            trayIcon = new AppTrayIcon(this);
+            service = new MonitorService();
+
+            trayIcon = new AppTrayIcon(this, service);
             trayIcon.Show();
         }
 

@@ -14,12 +14,15 @@ namespace MonitorInputSwitcher
     public class AppTrayIcon : IDisposable
     {
         private readonly App app;
+        private readonly MonitorService service;
         private NotifyIcon? trayIcon;
 
-        public AppTrayIcon(App app)
+        public AppTrayIcon(App app, MonitorService service)
         {
             Ensure.NotNull(app, "app");
+            Ensure.NotNull(service, "service");
             this.app = app;
+            this.service = service;
         }
 
         public void Show()
@@ -36,7 +39,8 @@ namespace MonitorInputSwitcher
 
         private void OnIconClick(object? sender, MouseEventArgs e)
         {
-
+            if (e.Button == MouseButtons.Left)
+                service.SwitchAll();
         }
 
         public void Dispose()
