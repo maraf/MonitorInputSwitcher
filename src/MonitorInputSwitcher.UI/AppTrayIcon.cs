@@ -34,13 +34,16 @@ namespace MonitorInputSwitcher
             trayIcon.MouseClick += OnIconClick;
 
             trayIcon.ContextMenuStrip = new ContextMenuStrip();
+            trayIcon.ContextMenuStrip.Items.Add("Other").Click += (sender, e) => service.SwitchAllToOther();
+            trayIcon.ContextMenuStrip.Items.Add("This").Click += (sender, e) => service.SwitchAllToThis();
+            trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
             trayIcon.ContextMenuStrip.Items.Add("Exit").Click += (sender, e) => app.Shutdown();
         }
 
         private void OnIconClick(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
-                service.SwitchAll();
+                service.SwitchAllToOther();
         }
 
         public void Dispose()

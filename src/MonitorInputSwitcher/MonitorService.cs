@@ -10,10 +10,14 @@ namespace MonitorInputSwitcher
 {
     public class MonitorService
     {
-        public void SwitchAll()
-        {
-            Console.WriteLine($"MachineName '{Environment.MachineName}'.");
+        public void SwitchAllToThis() 
+            => Switch(settings => settings.FirstOrDefault(s => s.Key == Environment.MachineName).Value);
 
+        public void SwitchAllToOther() 
+            => Switch(settings => settings.FirstOrDefault(s => s.Key != Environment.MachineName).Value);
+
+        private static void Switch(Func<Dictionary<string, Dictionary<int, int>>, Dictionary<int, int>?> selector, int index = -1)
+        {
             var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "MonitorInputSwitcher.json");
             if (!File.Exists(filePath))
             {
@@ -30,8 +34,8 @@ namespace MonitorInputSwitcher
 
             var handles = Win32.GetMonitorHandles();
 
-            var other = settings.FirstOrDefault(s => s.Key != Environment.MachineName);
-            if (other.Key == null)
+            var other = selector(settings);
+            if (other == null)
             {
                 Console.WriteLine("Missing other configuration.");
                 return;
@@ -39,7 +43,10 @@ namespace MonitorInputSwitcher
 
             for (int i = 0; i < handles.Count; i++)
             {
-                if (other.Value.TryGetValue(i, out var input))
+                if (index >= 0 && index != i)
+                    continue;
+
+                if (other.TryGetValue(i, out var input))
                     Win32.SetInputType(handles[i], (Win32.InputType)input);
             }
         }
