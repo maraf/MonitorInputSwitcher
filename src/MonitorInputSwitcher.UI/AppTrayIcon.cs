@@ -28,6 +28,7 @@ namespace MonitorInputSwitcher
         public void Show()
         {
             trayIcon = new NotifyIcon();
+            trayIcon.Text = "Monitor Input Switcher";
             trayIcon.Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
             trayIcon.Visible = true;
 
