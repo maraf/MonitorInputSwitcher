@@ -34,6 +34,7 @@ namespace MonitorInputSwitcher
 
         private void RegisterHotkeys()
         {
+            hotkeys.Add(Key.H, ModifierKeys.Windows | ModifierKeys.Alt, (k, m) => service.SwitchAllToThis());
             hotkeys.Add(Key.O, ModifierKeys.Windows | ModifierKeys.Alt, (k, m) => service.SwitchAllToOther());
         }
 
