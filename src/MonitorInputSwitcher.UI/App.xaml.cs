@@ -17,18 +17,23 @@ namespace MonitorInputSwitcher
 {
     public partial class App : Application
     {
-        private AppTrayIcon? trayIcon;
-        private MonitorService? service;
-        private HotkeyCollectionBase? hotkeys;
+        private AppTrayIcon trayIcon;
+        private MonitorService service;
+        private HotkeyCollectionBase hotkeys;
+
+        public App()
+        {
+            hotkeys = new ComponentDispatcherHotkeyCollection();
+            service = new MonitorService();
+            trayIcon = new AppTrayIcon(this, service);
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            service = new MonitorService();
-
-            trayIcon = new AppTrayIcon(this, service);
             trayIcon.Show();
+
             RegisterHotkeys();
         }
 
@@ -40,8 +45,8 @@ namespace MonitorInputSwitcher
 
         protected override void OnExit(ExitEventArgs e)
         {
-            hotkeys.Dispose();
-            trayIcon.Dispose();
+            hotkeys?.Dispose();
+            trayIcon?.Dispose();
 
             base.OnExit(e);
         }
