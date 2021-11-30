@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Neptuo.Windows.HotKeys;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 [assembly: ThemeInfo(
     ResourceDictionaryLocation.None,
@@ -17,6 +19,7 @@ namespace MonitorInputSwitcher
     {
         private AppTrayIcon? trayIcon;
         private MonitorService? service;
+        private HotkeyCollectionBase? hotkeys;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -26,10 +29,17 @@ namespace MonitorInputSwitcher
 
             trayIcon = new AppTrayIcon(this, service);
             trayIcon.Show();
+            RegisterHotkeys();
+        }
+
+        private void RegisterHotkeys()
+        {
+            hotkeys.Add(Key.O, ModifierKeys.Windows | ModifierKeys.Alt, (k, m) => service.SwitchAllToOther());
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            hotkeys.Dispose();
             trayIcon.Dispose();
 
             base.OnExit(e);
