@@ -1,0 +1,39 @@
+﻿<Window x:Class="MonitorInputSwitcher.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:root="clr-namespace:MonitorInputSwitcher"
+        mc:Ignorable="d"
+        Title="Help" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+        </Style>
+    </Window.Resources>
+    <StackPanel Margin="20">
+        <TextBlock Text="{x:Static root:App.Title}" FontSize="30" />
+        <TextBlock Text="Neptuo" FontSize="12" />
+        <TextBlock Margin="0,5,0,0" x:Name="tblVersion" Text="v1.8.0" />
+
+        <TextBlock Text="Hotkeys" FontSize="20" Margin="0,20,0,0" />
+        <Grid>
+            <TextBlock Text="Win+Alt+O" FontWeight="Bold" />
+            <TextBlock Text="Switch all monitors to Other" HorizontalAlignment="Right" />
+        </Grid>
+        <Grid>
+            <TextBlock Text="Win+Alt+H" FontWeight="Bold" />
+            <TextBlock Text="Switch all monitors to This" HorizontalAlignment="Right" />
+        </Grid>
+
+        <TextBlock Text="Settings" FontSize="20" Margin="0,20,0,0" />
+        <StackPanel>
+            <TextBox x:Name="tbxSettingsPath" IsReadOnly="True" Text="" BorderThickness="0" />
+            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                <Button Content="Open" x:Name="btnOpenSettings" Click="btnOpenSettings_Click" />
+                <Button Content="Reload" x:Name="btnReloadSettings" Click="btnReloadSettings_Click" />
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</Window>

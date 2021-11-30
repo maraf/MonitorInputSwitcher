@@ -9,6 +9,7 @@
 		<RootNamespace>MonitorInputSwitcher</RootNamespace>
 		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
 		<AssemblyName>misw</AssemblyName>
+		<VersionPrefix>1.0.0</VersionPrefix>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -17,6 +17,8 @@ namespace MonitorInputSwitcher
 {
     public partial class App : Application
     {
+        public const string Title = "Monitor Input Switcher";
+
         private AppTrayIcon trayIcon;
         private MonitorService service;
         private HotkeyCollectionBase hotkeys;

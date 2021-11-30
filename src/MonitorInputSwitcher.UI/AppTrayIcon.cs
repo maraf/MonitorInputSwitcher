@@ -1,4 +1,5 @@
-﻿using Neptuo;
+﻿using MonitorInputSwitcher.Views;
+using Neptuo;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ namespace MonitorInputSwitcher
         private readonly App app;
         private readonly MonitorService service;
         private NotifyIcon? trayIcon;
+        private HelpWindow? help;
 
         public AppTrayIcon(App app, MonitorService service)
         {
@@ -28,7 +30,7 @@ namespace MonitorInputSwitcher
         public void Show()
         {
             trayIcon = new NotifyIcon();
-            trayIcon.Text = "Monitor Input Switcher";
+            trayIcon.Text = App.Title;
             trayIcon.Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
             trayIcon.Visible = true;
 
@@ -36,6 +38,9 @@ namespace MonitorInputSwitcher
 
             BuildContextMenu();
         }
+
+        public void Reload()
+            => BuildContextMenu();
 
         private void BuildContextMenu()
         {
@@ -69,9 +74,20 @@ namespace MonitorInputSwitcher
 
             AddSeparator();
 
-            AddItem(trayIcon.ContextMenuStrip.Items, "Reload", () => BuildContextMenu());
-            AddItem(trayIcon.ContextMenuStrip.Items, "Settings", () => OnSettingsClick());
+            AddItem(trayIcon.ContextMenuStrip.Items, "Help", OnOpenHelp);
             AddItem(trayIcon.ContextMenuStrip.Items, "Exit", () => app.Shutdown());
+        }
+
+        private void OnOpenHelp()
+        {
+            if (help == null)
+            {
+                help = new HelpWindow(this, service);
+                help.Closed += (s, e) => help = null;
+            }
+
+            help.Activate();
+            help.Show();
         }
 
         private void AddItem(ToolStripItemCollection items, string title, Action handler)
@@ -89,15 +105,6 @@ namespace MonitorInputSwitcher
         {
             if (e.Button == MouseButtons.Left)
                 service.SwitchAllToOther();
-        }
-
-        private void OnSettingsClick()
-        {
-            var process = Process.Start(new ProcessStartInfo()
-            {
-                FileName = service.GetSettingsPath(),
-                UseShellExecute = true
-            });
         }
 
         public void Dispose()
