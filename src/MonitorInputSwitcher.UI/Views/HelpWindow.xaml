@@ -17,6 +17,16 @@
         <TextBlock Text="Neptuo" FontSize="12" />
         <TextBlock Margin="0,5,0,0" x:Name="tblVersion" Text="v1.8.0" />
 
+        <TextBlock Text="Tray icon" FontSize="20" Margin="0,20,0,0" />
+        <Grid>
+            <TextBlock Text="Left click" FontWeight="Bold" />
+            <TextBlock Text="Switch all monitors to Other" HorizontalAlignment="Right" />
+        </Grid>
+        <Grid>
+            <TextBlock Text="Right click" FontWeight="Bold" />
+            <TextBlock Text="Switch all monitors to This" HorizontalAlignment="Right" />
+        </Grid>
+
         <TextBlock Text="Hotkeys" FontSize="20" Margin="0,20,0,0" />
         <Grid>
             <TextBlock Text="Win+Alt+O" FontWeight="Bold" />

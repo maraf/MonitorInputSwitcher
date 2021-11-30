@@ -105,6 +105,8 @@ namespace MonitorInputSwitcher
         {
             if (e.Button == MouseButtons.Left)
                 service.SwitchAllToOther();
+            else if (e.Button == MouseButtons.Middle)
+                service.SwitchAllToThis();
         }
 
         public void Dispose()
