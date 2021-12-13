@@ -17,10 +17,10 @@ namespace MonitorInputSwitcher
         public string FindOtherName()
             => GetSettings().FirstOrDefault(s => s.Key != Environment.MachineName).Key;
 
-        public bool HasThisForMonitor(int index) 
+        public bool HasThisForMonitor(int index)
             => FindThis(GetSettings()).Value?.ContainsKey(index) ?? false;
 
-        public bool HasOtherForMonitor(int index) 
+        public bool HasOtherForMonitor(int index)
             => FindOther(GetSettings()).Value?.ContainsKey(index) ?? false;
 
         public int GetMonitorCount()
@@ -55,8 +55,14 @@ namespace MonitorInputSwitcher
                 if (index >= 0 && index != i)
                     continue;
 
-                if (other.TryGetValue(i, out var input))
-                    Win32.SetInputType(handles[i], (Win32.InputType)input);
+                if (other.TryGetValue(i, out var value))
+                {
+                    var target = (Win32.InputType)value;
+
+                    var current = Win32.FindInputType(handles[i]);
+                    if (current == null || current.Value != target)
+                        Win32.SetInputType(handles[i], target);
+                }
             }
         }
 
@@ -73,7 +79,7 @@ namespace MonitorInputSwitcher
             return new Dictionary<string, Dictionary<int, int>>();
         }
 
-        private static string GetSettingsFilePath() 
+        private static string GetSettingsFilePath()
             => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "MonitorInputSwitcher.json");
 
         public string GetSettingsPath()

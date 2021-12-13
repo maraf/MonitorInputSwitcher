@@ -48,6 +48,32 @@ namespace MonitorInputSwitcher
             return true;
         }
 
+        public static Win32.InputType? FindInputType(IntPtr hMonitor)
+        {
+            // get number of physical displays (assume only one for simplicity)
+            var success = GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, out uint physicalMonitorCount);
+            if (!success)
+                return null;
+
+            var physicalMonitorArray = new Win32.PhysicalMonitor[physicalMonitorCount]; //count will be 1 for extended displays and 2(or more) for mirrored displays
+
+            success = GetPhysicalMonitorsFromHMONITOR(hMonitor, physicalMonitorCount, physicalMonitorArray);
+            if (!success)
+                return null;
+
+            var physicalMonitor = physicalMonitorArray[physicalMonitorArray.Length - 1]; //if count > 1 then we assume the laptop screen is 1st in array and the mirrored monitor is 2nd
+
+
+            uint currentValue = 0u;
+            uint maximum = 0u;
+
+            var result = Win32.GetVCPFeatureAndVCPFeatureReply(physicalMonitor.hPhysicalMonitor, INPUT_SELECT, IntPtr.Zero, ref currentValue, ref maximum);
+            if (!result)
+                return null;
+
+            return (Win32.InputType)currentValue;
+        }
+
         public enum InputType
         {
             //VGA = 1,
@@ -83,6 +109,9 @@ namespace MonitorInputSwitcher
         private static extern bool SetVCPFeature(IntPtr hMonitor, byte bVCPCode, int dwNewValue);
 
         private delegate bool MonitorEnumProc(IntPtr hDesktop, IntPtr hdc, ref Rect pRect, int dwData);
+
+        [DllImport("Dxva2.dll")]
+        private static extern bool GetVCPFeatureAndVCPFeatureReply(IntPtr monitorHandle, uint vcpCode, [Out] IntPtr source, ref uint currentValue, ref uint maximumValue);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct Rect
