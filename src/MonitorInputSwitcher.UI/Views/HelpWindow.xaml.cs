@@ -20,11 +20,13 @@ namespace MonitorInputSwitcher.Views
     {
         private readonly AppTrayIcon trayIcon;
         private readonly MonitorService service;
+        private readonly ShortcutService shortcuts;
 
-        public HelpWindow(AppTrayIcon trayIcon, MonitorService service)
+        public HelpWindow(AppTrayIcon trayIcon, MonitorService service, ShortcutService shortcuts)
         {
             this.trayIcon = trayIcon;
             this.service = service;
+            this.shortcuts = shortcuts;
 
             InitializeComponent();
 
@@ -51,6 +53,14 @@ namespace MonitorInputSwitcher.Views
                 FileName = "https://github.com/maraf/MonitorInputSwitcher",
                 UseShellExecute = true
             });
+        }
+
+        private void btnAutoStart_Click(object sender, RoutedEventArgs e)
+        {
+            if (shortcuts.Exists(Environment.SpecialFolder.Startup))
+                shortcuts.Delete(Environment.SpecialFolder.Startup);
+            else
+                shortcuts.Create(Environment.SpecialFolder.Startup);
         }
     }
 }

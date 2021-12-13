@@ -49,6 +49,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                 <Button Content="Open" x:Name="btnOpenSettings" Click="btnOpenSettings_Click" />
                 <Button Content="Reload" x:Name="btnReloadSettings" Click="btnReloadSettings_Click" />
+                <Button Content="Auto start" x:Name="btnAutoStart" Click="btnAutoStart_Click" />
             </StackPanel>
         </StackPanel>
     </StackPanel>

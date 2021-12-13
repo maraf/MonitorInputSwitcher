@@ -1,5 +1,4 @@
 ﻿using MonitorInputSwitcher.Views;
-using Neptuo;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,15 +15,15 @@ namespace MonitorInputSwitcher
     {
         private readonly App app;
         private readonly MonitorService service;
+        private readonly ShortcutService shortcuts;
         private NotifyIcon? trayIcon;
         private HelpWindow? help;
 
-        public AppTrayIcon(App app, MonitorService service)
+        public AppTrayIcon(App app, MonitorService service, ShortcutService shortcuts)
         {
-            Ensure.NotNull(app, "app");
-            Ensure.NotNull(service, "service");
             this.app = app;
             this.service = service;
+            this.shortcuts = shortcuts;
         }
 
         public void Show()
@@ -82,7 +81,7 @@ namespace MonitorInputSwitcher
         {
             if (help == null)
             {
-                help = new HelpWindow(this, service);
+                help = new HelpWindow(this, service, shortcuts);
                 help.Closed += (s, e) => help = null;
             }
 

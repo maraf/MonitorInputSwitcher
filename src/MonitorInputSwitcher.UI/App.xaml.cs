@@ -19,15 +19,23 @@ namespace MonitorInputSwitcher
     {
         public const string Title = "Monitor Input Switcher";
 
+        private ShortcutService shortcuts;
         private AppTrayIcon trayIcon;
         private MonitorService service;
         private HotkeyCollectionBase hotkeys;
 
         public App()
         {
+            shortcuts = new ShortcutService(
+               companyName: "Neptuo",
+               suiteName: "Desktop Utils",
+               productName: "Monitor Input Switcher"
+            );
+
             hotkeys = new ComponentDispatcherHotkeyCollection();
             service = new MonitorService();
-            trayIcon = new AppTrayIcon(this, service);
+            trayIcon = new AppTrayIcon(this, service, shortcuts);
+
         }
 
         protected override void OnStartup(StartupEventArgs e)
