@@ -14,8 +14,14 @@
     </Window.Resources>
     <StackPanel Margin="20">
         <TextBlock Text="{x:Static root:App.Title}" FontSize="30" />
-        <TextBlock Text="Neptuo" FontSize="12" />
-        <TextBlock Margin="0,5,0,0" x:Name="tblVersion" Text="v1.8.0" />
+        <Grid>
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Neptuo" FontSize="12" />
+                <TextBlock Margin="0,5,0,0" x:Name="tblVersion" Text="v1.8.0" />
+            </StackPanel>
+
+            <Button Content="GitHub repository" x:Name="btnOpenGitHub" Click="btnOpenGitHub_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0" />
+        </Grid>
 
         <TextBlock Text="Tray icon" FontSize="20" Margin="0,20,0,0" />
         <Grid>

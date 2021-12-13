@@ -43,5 +43,14 @@ namespace MonitorInputSwitcher.Views
 
         private void btnReloadSettings_Click(object sender, RoutedEventArgs e)
             => trayIcon.Reload();
+
+        private void btnOpenGitHub_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "https://github.com/maraf/MonitorInputSwitcher",
+                UseShellExecute = true
+            });
+        }
     }
 }
