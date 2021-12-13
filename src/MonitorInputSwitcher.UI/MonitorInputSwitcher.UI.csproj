@@ -10,6 +10,9 @@
 		<ApplicationIcon>AppIcon.ico</ApplicationIcon>
 		<AssemblyName>misw</AssemblyName>
 		<VersionPrefix>$(ApplicationVersion)</VersionPrefix>
+		<Authors>maraf</Authors>
+		<Company>Neptuo</Company>
+		<Product>Monitor Input Switcher</Product>
 	</PropertyGroup>
 
 	<ItemGroup>
