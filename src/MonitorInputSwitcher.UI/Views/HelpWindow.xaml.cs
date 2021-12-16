@@ -30,11 +30,26 @@ namespace MonitorInputSwitcher.Views
 
             InitializeComponent();
 
-            tblVersion.Text = GetType().Assembly.GetName().Version.ToString(3);
+            tblVersion.Text = GetVersion();
             tbxSettingsPath.Text = service.GetSettingsPath();
             cbxAutoStart.IsChecked = shortcuts.Exists(Environment.SpecialFolder.Startup);
             cbxAutoStart.Checked += cbxAutoStart_Changed;
             cbxAutoStart.Unchecked += cbxAutoStart_Changed;
+
+            Dictionary<string, string> currentValues = new Dictionary<string, string>();
+            for (int i = 0; i < service.GetMonitorCount(); i++)
+                currentValues[$"Monitor {i + 1}"] = service.FindCurrentInput(i)?.ToString() ?? "Unknown";
+
+            itcCurrentValues.ItemsSource = currentValues;
+        }
+
+        private string GetVersion()
+        {
+            var version = GetType().Assembly.GetName().Version;
+            if (version == null)
+                return "0.0.0";
+
+            return version.ToString(3);
         }
 
         private void btnOpenSettings_Click(object sender, RoutedEventArgs e)

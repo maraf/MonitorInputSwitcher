@@ -38,6 +38,19 @@ namespace MonitorInputSwitcher
         public void SwitchToOther(int index)
             => Switch(settings => FindOther(settings).Value, index);
 
+        public int? FindCurrentInput(int index)
+        {
+            var handles = Win32.GetMonitorHandles();
+            if (index >= handles.Count)
+                return null;
+
+            var value = Win32.FindInputType(handles[index]);
+            if (value == null)
+                return null;
+
+            return (int)value;
+        }
+
         private static void Switch(Func<Dictionary<string, Dictionary<int, int>>, Dictionary<int, int>?> selector, int index = -1)
         {
             var settings = GetSettings();
