@@ -43,13 +43,19 @@
             <TextBlock Text="Switch all monitors to This" HorizontalAlignment="Right" />
         </Grid>
 
+        <TextBlock Text="Windows integration" FontSize="20" Margin="0,20,0,0" />
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="cbxAutoStart" Content="Start with windows" />
+            </StackPanel>
+        </StackPanel>
+
         <TextBlock Text="Settings" FontSize="20" Margin="0,20,0,0" />
         <StackPanel>
             <TextBox x:Name="tbxSettingsPath" IsReadOnly="True" Text="" BorderThickness="0" />
             <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
                 <Button Content="Open" x:Name="btnOpenSettings" Click="btnOpenSettings_Click" />
                 <Button Content="Reload" x:Name="btnReloadSettings" Click="btnReloadSettings_Click" />
-                <Button Content="Auto start" x:Name="btnAutoStart" Click="btnAutoStart_Click" />
             </StackPanel>
         </StackPanel>
     </StackPanel>

@@ -32,6 +32,9 @@ namespace MonitorInputSwitcher.Views
 
             tblVersion.Text = GetType().Assembly.GetName().Version.ToString(3);
             tbxSettingsPath.Text = service.GetSettingsPath();
+            cbxAutoStart.IsChecked = shortcuts.Exists(Environment.SpecialFolder.Startup);
+            cbxAutoStart.Checked += cbxAutoStart_Changed;
+            cbxAutoStart.Unchecked += cbxAutoStart_Changed;
         }
 
         private void btnOpenSettings_Click(object sender, RoutedEventArgs e)
@@ -55,7 +58,7 @@ namespace MonitorInputSwitcher.Views
             });
         }
 
-        private void btnAutoStart_Click(object sender, RoutedEventArgs e)
+        private void cbxAutoStart_Changed(object sender, RoutedEventArgs e)
         {
             if (shortcuts.Exists(Environment.SpecialFolder.Startup))
                 shortcuts.Delete(Environment.SpecialFolder.Startup);
