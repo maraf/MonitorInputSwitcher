@@ -30,7 +30,7 @@
         </Grid>
         <Grid>
             <TextBlock Text="Right click" FontWeight="Bold" />
-            <TextBlock Text="Switch all monitors to This" HorizontalAlignment="Right" />
+            <TextBlock Text="Open the context menu" HorizontalAlignment="Right" />
         </Grid>
 
         <TextBlock Text="Hotkeys" FontSize="20" Margin="0,20,0,0" />
