@@ -30,7 +30,7 @@ namespace MonitorInputSwitcher
         {
             trayIcon = new NotifyIcon();
             trayIcon.Text = App.Title;
-            trayIcon.Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
+            trayIcon.Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName);
             trayIcon.Visible = true;
 
             trayIcon.MouseClick += OnIconClick;
@@ -54,7 +54,7 @@ namespace MonitorInputSwitcher
             if (!String.IsNullOrEmpty(thisName))
                 AddItem(trayIcon.ContextMenuStrip.Items, $"This ({thisName})", () => service.SwitchAllToThis());
 
-            AddSeparator();
+            AddSeparator(trayIcon.ContextMenuStrip);
 
             for (int i = 0; i < service.GetMonitorCount(); i++)
             {
@@ -71,7 +71,7 @@ namespace MonitorInputSwitcher
                     trayIcon.ContextMenuStrip.Items.Add(monitorGroup);
             }
 
-            AddSeparator();
+            AddSeparator(trayIcon.ContextMenuStrip);
 
             AddItem(trayIcon.ContextMenuStrip.Items, "Help", OnOpenHelp);
             AddItem(trayIcon.ContextMenuStrip.Items, "Exit", () => app.Shutdown());
@@ -89,15 +89,15 @@ namespace MonitorInputSwitcher
             help.Show();
         }
 
-        private void AddItem(ToolStripItemCollection items, string title, Action handler)
+        private static void AddItem(ToolStripItemCollection items, string title, Action handler)
         {
             items.Add(title).Click += (sender, e) => handler();
         }
 
-        private void AddSeparator()
+        private static void AddSeparator(ContextMenuStrip contextMenuStrip)
         {
-            if (trayIcon!.ContextMenuStrip.Items.Count > 0)
-                trayIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            if (contextMenuStrip.Items.Count > 0)
+                contextMenuStrip.Items.Add(new ToolStripSeparator());
         }
 
         private void OnIconClick(object? sender, MouseEventArgs e)
