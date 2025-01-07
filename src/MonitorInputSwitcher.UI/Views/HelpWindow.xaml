@@ -70,5 +70,8 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+            <Button Content="Identify monitors" x:Name="btnIdentify" Click="btnIdentify_Click" />
+        </StackPanel>
     </StackPanel>
 </Window>

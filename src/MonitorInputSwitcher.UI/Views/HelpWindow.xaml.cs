@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -38,10 +39,13 @@ namespace MonitorInputSwitcher.Views
 
             Dictionary<string, string> currentValues = new Dictionary<string, string>();
             for (int i = 0; i < service.GetMonitorCount(); i++)
-                currentValues[$"Monitor {i + 1}"] = service.FindCurrentInput(i)?.ToString() ?? "Unknown";
+                currentValues[$"Monitor {i}"] = GetCurrentInput(i);
 
             itcCurrentValues.ItemsSource = currentValues;
         }
+
+        private string GetCurrentInput(int index)
+            => service.FindCurrentInput(index)?.ToString() ?? "Unknown";
 
         private string GetVersion()
         {
@@ -79,6 +83,54 @@ namespace MonitorInputSwitcher.Views
                 shortcuts.Delete(Environment.SpecialFolder.Startup);
             else
                 shortcuts.Create(Environment.SpecialFolder.Startup);
+        }
+
+        private async void btnIdentify_Click(object sender, RoutedEventArgs e)
+        {
+            btnIdentify.IsEnabled = false;
+
+            Window[] wnds = new Window[Screen.AllScreens.Length];
+            for (int i = 0; i < Screen.AllScreens.Length; i++)
+            {
+                var screen = Screen.AllScreens[i];
+
+                var size = 200;
+                StackPanel content = new StackPanel()
+                {
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                string title = $"Monitor {i}";
+                content.Children.Add(new TextBlock(new Run(title))
+                {
+                    FontSize = 24,
+                    TextAlignment = TextAlignment.Center
+                });
+                content.Children.Add(new TextBlock(new Run($"Input {GetCurrentInput(i)}"))
+                {
+                    TextAlignment = TextAlignment.Center
+                });
+                Window wnd = new Window
+                {
+                    Title = title,
+                    WindowStyle = WindowStyle.None,
+                    ShowInTaskbar = false,
+                    Width = size,
+                    Height = size,
+                    Left = screen.WorkingArea.Left + (screen.WorkingArea.Width / 2) - size,
+                    Top = screen.WorkingArea.Top + (screen.WorkingArea.Height / 2) - size,
+                    Content = content
+                };
+                wnd.Show();
+                wnds[i] = wnd;
+            }
+
+            await Task.Delay(10 * 1000);
+
+            for (int i = 0;i < wnds.Length; i++)
+                wnds[i].Close();
+
+            btnIdentify.IsEnabled = true;
         }
     }
 }
