@@ -59,7 +59,7 @@ namespace MonitorInputSwitcher
             for (int i = 0; i < service.GetMonitorCount(); i++)
             {
                 var index = i;
-                var monitorGroup = new ToolStripMenuItem($"Monitor {i + 1}");
+                var monitorGroup = new ToolStripMenuItem($"Monitor {i}");
 
                 if (service.HasOtherForMonitor(i))
                     AddItem(monitorGroup.DropDownItems, $"Other ({otherName})", () => service.SwitchToOther(index));
