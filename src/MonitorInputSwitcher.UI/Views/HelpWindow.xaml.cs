@@ -39,7 +39,15 @@ namespace MonitorInputSwitcher.Views
 
             Dictionary<string, string> currentValues = new Dictionary<string, string>();
             for (int i = 0; i < service.GetMonitorCount(); i++)
-                currentValues[$"Monitor {i}"] = GetCurrentInput(i);
+            {
+                string name = service.GetMonitorName(i);
+                string defaultName = service.GetDefaultMonitorName(i);
+                if (name != defaultName)
+                {
+                    name = $"{defaultName} ({name})";
+                }
+                currentValues[name] = GetCurrentInput(i);
+            }
 
             itcCurrentValues.ItemsSource = currentValues;
         }
@@ -100,12 +108,21 @@ namespace MonitorInputSwitcher.Views
                     HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                 };
-                string title = $"Monitor {i}";
+                string title = service.GetDefaultMonitorName(i);
                 content.Children.Add(new TextBlock(new Run(title))
                 {
                     FontSize = 24,
                     TextAlignment = TextAlignment.Center
                 });
+                string name = service.GetMonitorName(i);
+                if (title != name)
+                {
+                    content.Children.Add(new TextBlock(new Run($"\"{name}\""))
+                    {
+                        FontSize = 20,
+                        TextAlignment = TextAlignment.Center
+                    });
+                }
                 content.Children.Add(new TextBlock(new Run($"Input {GetCurrentInput(i)}"))
                 {
                     TextAlignment = TextAlignment.Center

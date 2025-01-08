@@ -6,22 +6,49 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ComputeConfigurationSelector = System.Func<System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, int>>, System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.Dictionary<string, int>>>;
 
 namespace MonitorInputSwitcher
 {
     public class MonitorService
     {
         public string FindThisName()
-            => GetSettings().FirstOrDefault(s => s.Key == Environment.MachineName).Key;
+            => GetSettings().Computers.FirstOrDefault(s => s.Key == Environment.MachineName).Key;
 
         public string FindOtherName()
-            => GetSettings().FirstOrDefault(s => s.Key != Environment.MachineName).Key;
+            => GetSettings().Computers.FirstOrDefault(s => s.Key != Environment.MachineName).Key;
 
         public bool HasThisForMonitor(int index)
-            => FindThis(GetSettings()).Value?.ContainsKey(index) ?? false;
+            => HasMonitorForComputer(index, FindThis);
 
         public bool HasOtherForMonitor(int index)
-            => FindOther(GetSettings()).Value?.ContainsKey(index) ?? false;
+            => HasMonitorForComputer(index, FindOther);
+
+        private static bool HasMonitorForComputer(int index, ComputeConfigurationSelector computerSelector)
+        {
+            var configuration = GetSettings();
+            var computerConfiguration = computerSelector(configuration.Computers);
+
+            if (TryGetMonitorConfigurationKey(configuration, index, out var configurationKey))
+                return computerConfiguration.Value?.ContainsKey(configurationKey) ?? false;
+
+            return false;
+        }
+
+        private static bool TryGetMonitorConfigurationKey(ConfigurationVersion2 configuration, int index, out string name)
+        {
+            if (configuration.Monitors.Count == 0)
+            {
+                name = index.ToString();
+                return true;
+            }
+
+            if (configuration.Monitors.TryGetValue(index, out name))
+                return true;
+
+            name = string.Empty;
+            return false;
+        }
 
         public int GetMonitorCount()
             => Win32.GetMonitorHandles().Count;
@@ -30,13 +57,13 @@ namespace MonitorInputSwitcher
             => SwitchToThis(-1);
 
         public void SwitchToThis(int index)
-            => Switch(settings => FindThis(settings).Value, index);
+            => Switch(FindThis, index);
 
         public void SwitchAllToOther()
             => SwitchToOther(-1);
 
         public void SwitchToOther(int index)
-            => Switch(settings => FindOther(settings).Value, index);
+            => Switch(FindOther, index);
 
         public int? FindCurrentInput(int index)
         {
@@ -51,24 +78,29 @@ namespace MonitorInputSwitcher
             return (int)value;
         }
 
-        private static void Switch(Func<Dictionary<string, Dictionary<int, int>>, Dictionary<int, int>?> selector, int index = -1)
-        {
-            var settings = GetSettings();
-            var handles = Win32.GetMonitorHandles();
+        public string GetDefaultMonitorName(int index)
+            => $"Monitor {index}";
 
-            var other = selector(settings);
-            if (other == null)
-            {
-                Console.WriteLine("Missing other configuration.");
-                return;
-            }
+        public string GetMonitorName(int index)
+        {
+            if (GetSettings().Monitors.TryGetValue(index, out var name))
+                return name;
+
+            return GetDefaultMonitorName(index);
+        }
+
+        private static void Switch(ComputeConfigurationSelector computerSelector, int index = -1)
+        {
+            var configuration = GetSettings();
+            var handles = Win32.GetMonitorHandles();
+            var other = computerSelector(configuration.Computers);
 
             for (int i = 0; i < handles.Count; i++)
             {
                 if (index >= 0 && index != i)
                     continue;
 
-                if (other.TryGetValue(i, out var value))
+                if (TryGetMonitorConfigurationKey(configuration, i, out var configurationKey) && other.Value.TryGetValue(configurationKey, out var value))
                 {
                     var target = (Win32.InputType)value;
 
@@ -79,17 +111,31 @@ namespace MonitorInputSwitcher
             }
         }
 
-        private static Dictionary<string, Dictionary<int, int>> GetSettings()
+        private static ConfigurationVersion2 GetSettings()
         {
             var filePath = GetSettingsFilePath();
             if (File.Exists(filePath))
             {
-                var settings = JsonSerializer.Deserialize<Dictionary<string, Dictionary<int, int>>>(File.ReadAllText(filePath));
-                if (settings != null)
-                    return settings;
+                var jsonContent = File.ReadAllText(filePath);
+                var version = JsonSerializer.Deserialize<ConfigurationVersion>(jsonContent);
+                if (version?.Version == 2)
+                {
+                    var configuration = JsonSerializer.Deserialize<ConfigurationVersion2>(jsonContent);
+                    if (configuration != null)
+                        return configuration;
+                }
+
+                if (version == null || version.Version == null)
+                {
+                    var configuration = JsonSerializer.Deserialize<ConfigurationVersion1>(jsonContent);
+                    if (configuration != null)
+                    {
+                        return new ConfigurationVersion2(new(), configuration);
+                    }
+                }
             }
 
-            return new Dictionary<string, Dictionary<int, int>>();
+            return new ConfigurationVersion2(new(), new());
         }
 
         private static string GetSettingsFilePath()
@@ -115,10 +161,17 @@ namespace MonitorInputSwitcher
             return filePath;
         }
 
-        private static KeyValuePair<string, Dictionary<int, int>> FindThis(Dictionary<string, Dictionary<int, int>> settings)
+        private static KeyValuePair<string, Dictionary<string, int>> FindThis(Dictionary<string, Dictionary<string, int>> settings)
             => settings.FirstOrDefault(s => s.Key == Environment.MachineName);
 
-        private static KeyValuePair<string, Dictionary<int, int>> FindOther(Dictionary<string, Dictionary<int, int>> settings)
+        private static KeyValuePair<string, Dictionary<string, int>> FindOther( Dictionary<string, Dictionary<string, int>> settings)
             => settings.FirstOrDefault(s => s.Key != Environment.MachineName);
+
+        private record ConfigurationVersion(int? Version);
+
+        private class ConfigurationVersion1 : Dictionary<string, Dictionary<string, int>>
+        { }
+
+        private record ConfigurationVersion2(Dictionary<int, string> Monitors, Dictionary<string, Dictionary<string, int>> Computers);
     }
 }
