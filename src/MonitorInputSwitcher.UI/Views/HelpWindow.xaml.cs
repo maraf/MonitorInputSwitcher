@@ -19,15 +19,15 @@ namespace MonitorInputSwitcher.Views
 {
     public partial class HelpWindow : Window
     {
-        private readonly AppTrayIcon trayIcon;
         private readonly MonitorService service;
         private readonly ShortcutService shortcuts;
+        private readonly MonitorListModel model;
 
-        public HelpWindow(AppTrayIcon trayIcon, MonitorService service, ShortcutService shortcuts)
+        public HelpWindow(MonitorService service, ShortcutService shortcuts, MonitorListModel model)
         {
-            this.trayIcon = trayIcon;
             this.service = service;
             this.shortcuts = shortcuts;
+            this.model = model;
 
             InitializeComponent();
 
@@ -74,7 +74,7 @@ namespace MonitorInputSwitcher.Views
         }
 
         private void btnReloadSettings_Click(object sender, RoutedEventArgs e)
-            => trayIcon.Reload();
+            => model.Reload();
 
         private void btnOpenGitHub_Click(object sender, RoutedEventArgs e)
         {

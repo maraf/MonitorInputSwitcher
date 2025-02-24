@@ -14,16 +14,16 @@ namespace MonitorInputSwitcher
     public class AppTrayIcon : IDisposable
     {
         private readonly App app;
-        private readonly MonitorService service;
-        private readonly ShortcutService shortcuts;
+        private readonly MonitorListModel model;
+        private readonly Func<HelpWindow> helpFactory;
         private NotifyIcon? trayIcon;
         private HelpWindow? help;
 
-        public AppTrayIcon(App app, MonitorService service, ShortcutService shortcuts)
+        public AppTrayIcon(App app, MonitorListModel model, Func<HelpWindow> helpFactory)
         {
             this.app = app;
-            this.service = service;
-            this.shortcuts = shortcuts;
+            this.model = model;
+            this.helpFactory = helpFactory;
         }
 
         public void Show()
@@ -35,6 +35,8 @@ namespace MonitorInputSwitcher
 
             trayIcon.MouseClick += OnIconClick;
 
+            model.OnReload += BuildContextMenu;
+
             BuildContextMenu();
         }
 
@@ -45,27 +47,23 @@ namespace MonitorInputSwitcher
         {
             trayIcon!.ContextMenuStrip = new ContextMenuStrip();
 
-            string otherName = service.FindOtherName();
-            string thisName = service.FindThisName();
+            if (!String.IsNullOrEmpty(model.OtherName))
+                AddItem(trayIcon.ContextMenuStrip.Items, $"Other ({model.OtherName})", () => model.SwitchAllToOther.Execute());
 
-            if (!String.IsNullOrEmpty(otherName))
-                AddItem(trayIcon.ContextMenuStrip.Items, $"Other ({otherName})", () => service.SwitchAllToOther());
-
-            if (!String.IsNullOrEmpty(thisName))
-                AddItem(trayIcon.ContextMenuStrip.Items, $"This ({thisName})", () => service.SwitchAllToThis());
+            if (!String.IsNullOrEmpty(model.ThisName))
+                AddItem(trayIcon.ContextMenuStrip.Items, $"This ({model.ThisName})", () => model.SwitchAllToThis.Execute());
 
             AddSeparator(trayIcon.ContextMenuStrip);
 
-            for (int i = 0; i < service.GetMonitorCount(); i++)
+            foreach (var monitor in model.Monitors)
             {
-                var index = i;
-                var monitorGroup = new ToolStripMenuItem(service.GetMonitorName(index));
+                var monitorGroup = new ToolStripMenuItem(monitor.Name);
 
-                if (service.HasOtherForMonitor(i))
-                    AddItem(monitorGroup.DropDownItems, $"Other ({otherName})", () => service.SwitchToOther(index));
+                if (monitor.SwitchToOther.CanExecute())
+                    AddItem(monitorGroup.DropDownItems, $"Other ({model.OtherName})", () => monitor.SwitchToOther.Execute());
 
-                if (service.HasThisForMonitor(i))
-                    AddItem(monitorGroup.DropDownItems, $"This ({thisName})", () => service.SwitchToThis(index));
+                if (monitor.SwitchToThis.CanExecute())
+                    AddItem(monitorGroup.DropDownItems, $"This ({model.ThisName})", () => monitor.SwitchToThis.Execute());
 
                 if (monitorGroup.DropDownItems.Count > 0)
                     trayIcon.ContextMenuStrip.Items.Add(monitorGroup);
@@ -81,7 +79,7 @@ namespace MonitorInputSwitcher
         {
             if (help == null)
             {
-                help = new HelpWindow(this, service, shortcuts);
+                help = helpFactory();
                 help.Closed += (s, e) => help = null;
             }
 
@@ -103,14 +101,15 @@ namespace MonitorInputSwitcher
         private void OnIconClick(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
-                service.SwitchAllToOther();
+                model.SwitchAllToOther.Execute();
             else if (e.Button == MouseButtons.Middle)
-                service.SwitchAllToThis();
+                model.SwitchAllToThis.Execute();
         }
 
         public void Dispose()
         {
             trayIcon?.Dispose();
+            model.OnReload -= BuildContextMenu;
         }
     }
 }

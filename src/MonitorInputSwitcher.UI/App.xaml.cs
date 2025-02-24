@@ -1,10 +1,5 @@
-﻿using Neptuo.Windows.HotKeys;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MonitorInputSwitcher.Views;
+using Neptuo.Windows.HotKeys;
 using System.Windows;
 using System.Windows.Input;
 
@@ -22,6 +17,7 @@ namespace MonitorInputSwitcher
         private ShortcutService shortcuts;
         private AppTrayIcon trayIcon;
         private MonitorService service;
+        private MonitorListModel model;
         private HotkeyCollectionBase hotkeys;
 
         public App()
@@ -34,8 +30,8 @@ namespace MonitorInputSwitcher
 
             hotkeys = new ComponentDispatcherHotkeyCollection();
             service = new MonitorService();
-            trayIcon = new AppTrayIcon(this, service, shortcuts);
-
+            model = new MonitorListModel(service);
+            trayIcon = new AppTrayIcon(this, model, () => new HelpWindow(service, shortcuts, model));
         }
 
         protected override void OnStartup(StartupEventArgs e)

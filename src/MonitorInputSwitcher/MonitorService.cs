@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -109,6 +110,24 @@ namespace MonitorInputSwitcher
                         Win32.SetInputType(handles[i], target);
                 }
             }
+        }
+
+        public List<(string Name, int Index)> GetMonitors()
+        {
+            var settings = GetSettings();
+            var result = new List<(string Name, int Index)>();
+            if (settings.Monitors != null && settings.Monitors.Count > 0)
+            {
+                foreach (var item in settings.Monitors)
+                    result.Add((item.Value, item.Key));
+            }
+            else
+            {
+                for (int i = 0; i < GetMonitorCount(); i++)
+                    result.Add((GetDefaultMonitorName(i), i));
+            }
+
+            return result;
         }
 
         private static ConfigurationVersion2 GetSettings()
